@@ -1,0 +1,64 @@
+== zkinit
+
+[source,bash]
+----
+$ zkinit [options] /path/to/zookeeper/node [file]
+----
+
+There are some programs that store their application configuration in ZooKeeper.
+This can create a problem if you are trying to bootstrap a fully configured application.
+Enter `zkinit` which will allow you to seed the initial configuration into ZooKeeper.
+
+=== Command Line Options
+
+`-h`, `--help`:: Displays the help details of the command and exit.
+
+`-V`, `--version`:: Display the program version and exit.
+
+`-u`, `--update`:: If the node already exists, update the value.
+
+`-c`, `--create-required`:: If the node already exists, exit with an error.
+
+`-d`, `--debug`:: Output ZooKeeper connection debugging information.
+
+`-p`, `--parents`:: Ensure the parents of the node exist already.
+
+`-z`, `--zookeeper`:: zookeeper quorum hosts to connect to (if not specified then the `ZK_HOSTS` environment variable will be used)
+
+`--auth-digest`:: Uses the supplied digest for authentication to ZooKeeper.
+
+=== Examples
+
+.Seed the initial configuration
+[source,bash]
+----
+$ zkinit -z localhost:2181 -p /foo/bar config.json
+----
+
+.Force the configuration
+[source,bash]
+----
+$ zkinit -z localhost:2181 -p -u /foo/bar config.json
+----
+
+.Ensure the node exists
+[source,bash]
+----
+$ if zkinit -z localhost:2181 -p -c /foo/bar ; then \
+    echo "node crated with empty content" ; \
+  else \
+    echo "node already exists" ; \
+  fi
+----
+
+.Connect with Digest authentication for user `user` with password `password`
+----
+$ zkinit -z localhost:2181 \
+  --auth-digest user:tpUq/4Pn5A64fVZyQ0gOJ8ZWqkY= \ <1>
+  /foo/bar config.json
+----
+<1> Digest authentication uses the SHA1 sum of the whole `user:password` after Base64 encoding as the password portion of the digest string.
++
+The SHA1 sum of `user:password` is the bytes `b6 95 2a ff 83 e7 e4 0e b8 7d 56 72 43 48 0e 27 c6 56 aa 46` which are then Base64 encoded to `tpUq/4Pn5A64fVZyQ0gOJ8ZWqkY=` and finally prefixed with the username and a colon.
++
+See link:https://cwiki.apache.org/confluence/display/ZOOKEEPER/Client-Server+mutual+authentication[Client-Server mutual authentication].

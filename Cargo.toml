@@ -1,0 +1,9 @@
+[package]
+name = "zkinit"
+version = "0.1.0"
+authors = ["Stephen Connolly <stephen.alan.connolly@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+getopts = "0.2"
+zookeeper = "0.5"
